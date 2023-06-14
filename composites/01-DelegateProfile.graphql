@@ -1,3 +1,7 @@
+type ModeSetting @loadModel(id: "$MODESETTING_ID") {
+  id: ID!
+}
+
 # Delegate is the controller of this model
 type GenDelegateProfile @createModel(accountRelation: SINGLE, description: "A basic general Delegate Profile") {
   author: DID! @documentAccount
@@ -6,5 +10,7 @@ type GenDelegateProfile @createModel(accountRelation: SINGLE, description: "A ba
   generalDelegateStatement: String! @string(minLength:50, maxLength:10000)
   generalValues: String @string(minLength:50, maxLength:10000)
   generalSkills: String @string(minLength:50, maxLength:10000)
+  Mode: StreamID @documentReference(model: "ModeSetting")
+  mode: ModeSetting @relationDocument(property: "Mode")
 }
 
