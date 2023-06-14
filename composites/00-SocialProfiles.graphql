@@ -1,0 +1,12 @@
+# Delegate is the controller of this model
+type GenSocialProfiles @createModel(accountRelation: SINGLE, description: "A basic social profile data model") {
+  author: DID! @documentAccount
+  version: CommitID! @documentVersion
+  name: String! @string(minLength: 3, maxLength: 100)
+  twitter: String! @string(minLength:2, maxLength:100)
+  github: String @string(minLength:2, maxLength:100)
+  telegram: String @string(minLength:2, maxLength:100)
+  discord: String @string(minLength:2, maxLength:100)
+  medium: String @string(minLength:2, maxLength:100)
+  website: String @string(minLength:2, maxLength:100)
+}

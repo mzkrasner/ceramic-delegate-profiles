@@ -2,6 +2,10 @@ type GenDelegateProfile @loadModel(id: "$GENERALDELEGATEPROFILE_ID") {
   id: ID!
 }
 
+type DAOProfile @loadModel(id: "$DAOPROFILE_ID") {
+  id: ID!
+}
+
 # Delegate is the controller of this model
 type DelegateOfProfile @createModel(
     accountRelation: LIST
@@ -9,13 +13,10 @@ type DelegateOfProfile @createModel(
   ) {
   author: DID! @documentAccount
   version: CommitID! @documentVersion
-  daoContractAddress: String! @string(minLength:42, maxLength:42)
-  daoDID: DID @accountReference
   generalDelegateProfile: StreamID! @documentReference(model: "GenDelegateProfile")
   profile: GenDelegateProfile! @relationDocument(property: "generalDelegateProfile")
+  DaoProfile: StreamID! @documentReference(model: "DAOProfile")
+  daoProfile: DAOProfile! @relationDocument(property: "DaoProfile")
   intentStatement: String! @string(minLength: 25, maxLength: 100000)
   daoRelevantQuals: String @string(minLength: 25, maxLength: 100000)
 }
-
-
-

@@ -38,30 +38,40 @@ ceramic.did = did;
 const delProfileComposite = await createComposite(
   ceramic,
   "./composites/01-DelegateProfile.graphql"
-);
+)
 
-const delOfProfileSchema = readFileSync(
-  "./composites/02-DelegateOfProfile.graphql",
-  {
+const daoProfileComposite = await createComposite(
+  ceramic,
+  "./composites/02-DAOProfile.graphql"
+)
+
+const delOfProfileSchema = readFileSync("./composites/03-DelegateOfProfile.graphql", {
+  encoding: "utf-8",
+}).replace("$GENERALDELEGATEPROFILE_ID", delProfileComposite.modelIDs[0])
+  .replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
+
+  const delOfComposite = await Composite.create({
+    ceramic,
+    schema: delOfProfileSchema,
+  })
+
+  const delCircleSchema = readFileSync("./composites/04-DelegateCircleDist.graphql", {
     encoding: "utf-8",
-  }
-).replace("$GENERALDELEGATEPROFILE_ID", delProfileComposite.modelIDs[0]);
+  }).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
+    
 
-const delOfComposite = await Composite.create({
-  ceramic,
-  schema: delOfProfileSchema,
-});
+  const delCircleComposite = await Composite.create({
+    ceramic,
+    schema: delCircleSchema,
+  })
 
-const delValueComposite = await createComposite(
-  ceramic,
-  "./composites/03-DelegateGiveValue.graphql"
-);
 
-const composite = Composite.from([
-  delProfileComposite,
-  delOfComposite,
-  delValueComposite,
-]);
+  const composite = Composite.from([
+    delProfileComposite,
+    daoProfileComposite,
+    delOfComposite,
+    delCircleComposite
+])
 
 //Writing composites to local file
 await writeEncodedComposite(composite, "./definition.json");

@@ -1,0 +1,23 @@
+type DAOProfile @loadModel(id: "$DAOPROFILE_ID") {
+  id: ID!
+}
+
+# Coordinape is the controller of this model
+type DelegateCircleDistribution @createModel(
+    accountRelation: LIST
+    description: "A time-series data model to track, index, and analyze inferred delegate contributor value within their circles"
+  ) {
+  delegateID: DID! @accountReference
+  version: CommitID! @documentVersion
+  circleIdentifier: String! @string(minLength: 3, maxLength: 100)
+  DaoProfile: StreamID! @documentReference(model: "DAOProfile")
+  daoProfile: DAOProfile! @relationDocument(property: "DaoProfile")
+  epochEndDate: DateTime!
+  getTokensReceived: Int! @int(min: 0) 
+  totalTokensAvailable: Int! @int(min: 0) 
+}
+
+
+
+
+
