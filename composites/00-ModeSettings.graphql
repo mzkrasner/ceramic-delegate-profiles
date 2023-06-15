@@ -8,7 +8,6 @@ type ModeSetting @createModel(
 }
 
 enum Mode {
-  SOCIAL
-  PROTOCOL
-  CONSTITUTIONAL
+  LIGHT 
+  DARK 
 }
