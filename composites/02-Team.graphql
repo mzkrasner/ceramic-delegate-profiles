@@ -1,0 +1,8 @@
+
+type TeamProfile @createModel(accountRelation: LIST, description: "A Basic team primitive") {
+  author: DID! @documentAccount
+  version: CommitID! @documentVersion
+  teamName: String! @string(minLength: 3, maxLength: 100)
+  description: String @string(minLength: 3, maxLength: 10000)
+  website: String @string(minLength:2, maxLength:100)
+}

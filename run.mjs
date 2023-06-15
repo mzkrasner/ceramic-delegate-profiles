@@ -37,51 +37,39 @@ ceramic.did = did;
 
 const settingsComposite = await createComposite(
   ceramic,
-  "./composites-new/00-ModeSettings.graphql"
+  "./composites/00-ModeSettings.graphql"
+);
+
+const userProfileComposite = await createComposite(
+  ceramic,
+  "./composites/01-UserProfile.graphql"
+);
+
+const teamProfileComposite = await createComposite(
+  ceramic,
+  "./composites/02-Team.graphql"
+);
+
+const teamMemberSchema = readFileSync(
+  "./composites/03-TeamMember.graphql",
+  {
+    encoding: "utf-8",
+  }
 )
+  .replace("$USERPROFILE_ID", userProfileComposite.modelIDs[0])
+  .replace("$TEAM_ID", teamProfileComposite.modelIDs[0]);
 
-const delProfileSchema = readFileSync("./composites-new/01-DelegateProfile.graphql", {
-  encoding: "utf-8",
-}).replace("$MODESETTING_ID", settingsComposite.modelIDs[0])
-
-const delProfileComposite = await Composite.create({
+const teamMemberComposite = await Composite.create({
   ceramic,
-  schema: delProfileSchema,
-})
-
-const daoProfileComposite = await createComposite(
-ceramic,
-"./composites-new/02-DAOProfile.graphql"
-)
-
-const delOfProfileSchema = readFileSync("./composites-new/03-DelegateOfProfile.graphql", {
-encoding: "utf-8",
-}).replace("$GENERALDELEGATEPROFILE_ID", delProfileComposite.modelIDs[0])
-.replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
-
-const delOfComposite = await Composite.create({
-  ceramic,
-  schema: delOfProfileSchema,
-})
-
-const delCircleSchema = readFileSync("./composites-new/04-DelegateCircleDist.graphql", {
-  encoding: "utf-8",
-}).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
-  
-
-const delCircleComposite = await Composite.create({
-  ceramic,
-  schema: delCircleSchema,
-})
-
+  schema: teamMemberSchema,
+});
 
 const composite = Composite.from([
   settingsComposite,
-  delProfileComposite,
-  daoProfileComposite,
-  delOfComposite,
-  delCircleComposite
-])
+  userProfileComposite,
+  teamProfileComposite,
+  teamMemberComposite,
+]);
 
 //Writing composites to local file
 await writeEncodedComposite(composite, "./definition.json");
@@ -101,8 +89,10 @@ spinner.info(`Deployed the following models: ${id}`);
 await deployComposite.startIndexingOn(ceramic);
 spinner.succeed("composite deployed & ready for use");
 spinner.succeed("compiling composite into runtime composite");
-shell.exec(`composedb composite:compile definition.json runtime-composite.json`);
+shell.exec(
+  `composedb composite:compile definition.json runtime-composite.json`
+);
 spinner.succeed("establishing graphiql server");
-shell.exec(`composedb graphql:server --graphiql runtime-composite.json --port=5005`)
-
-
+shell.exec(
+  `composedb graphql:server --graphiql runtime-composite.json --port=5005`
+);

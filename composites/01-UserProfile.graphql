@@ -1,5 +1,3 @@
-# Delegate is the controller of this model
-## This is just a placeholder - not currently in use
 type GenSocialProfiles @createModel(accountRelation: SINGLE, description: "A basic social profile data model") {
   author: DID! @documentAccount
   version: CommitID! @documentVersion

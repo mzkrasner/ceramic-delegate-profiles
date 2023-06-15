@@ -1,0 +1,17 @@
+type UserProfile @loadModel(id: "$USERPROFILE_ID") {
+  id: ID!
+}
+
+type TeamProfile @loadModel(id: "$TEAM_ID") {
+  id: ID!
+}
+# authored by individual
+type TeamMember @createModel(accountRelation: LIST, description: "A Basic team member primitive") {
+  author: DID! @documentAccount
+  version: CommitID! @documentVersion
+  role: String! @string(minLength:2, maxLength:20)
+  Profile: StreamID @documentReference(model: "UserProfile")
+  userProfile: UserProfile @relationDocument(property: "Profile")
+  Team: StreamID @documentReference(model: "TeamProfile")
+  team: TeamProfile @relationDocument(property: "Team")
+}
