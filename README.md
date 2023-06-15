@@ -4,6 +4,8 @@ This repository contains scripts to help with the deployment of Ceramic nodes.
 
 View the guide on how to use these scripts [here](https://composedb.js.org/docs/0.4.x/guides/composedb-server/running-in-the-cloud#running-composedb-server-on-kubernetes).
 
+Ignore the section that starts with “Clone the simpledeploy repository and enter the created directory” (we will use the repository you are already in):
+
 Once you arrive at the sentence starting with "You can now follow the existing guides" use the following steps:
 
 1. Run `npm install` within the root directory to download the required dependencies
