@@ -1,4 +1,4 @@
-type UserProfile @loadModel(id: "$USERPROFILE_ID") {
+type GenSocialProfiles @loadModel(id: "$USERPROFILE_ID") {
   id: ID!
 }
 
@@ -10,8 +10,8 @@ type TeamMember @createModel(accountRelation: LIST, description: "A Basic team m
   author: DID! @documentAccount
   version: CommitID! @documentVersion
   role: String! @string(minLength:2, maxLength:20)
-  Profile: StreamID @documentReference(model: "UserProfile")
-  userProfile: UserProfile @relationDocument(property: "Profile")
+  Profile: StreamID @documentReference(model: "GenSocialProfiles")
+  userProfile: GenSocialProfiles @relationDocument(property: "Profile")
   Team: StreamID @documentReference(model: "TeamProfile")
   team: TeamProfile @relationDocument(property: "Team")
 }
