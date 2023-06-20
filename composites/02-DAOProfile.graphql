@@ -1,9 +1,0 @@
-# Coordinape is the controller of this model
-type DAOProfile @createModel(
-    accountRelation: LIST
-    description: "A simple DAO identifier model"
-  ) {
-  daoContractAddress: String! @string(minLength:42, maxLength:42)
-  version: CommitID! @documentVersion
-  daoDID: DID @accountReference
-}

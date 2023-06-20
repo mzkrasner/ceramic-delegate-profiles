@@ -37,34 +37,43 @@ ceramic.did = did;
 
 const settingsComposite = await createComposite(
   ceramic,
-  "./composites-new/00-ModeSettings.graphql"
+  "./composites/00-ModeSettings.graphql"
 )
 
-const delProfileSchema = readFileSync("./composites-new/01-DelegateProfile.graphql", {
-  encoding: "utf-8",
-}).replace("$MODESETTING_ID", settingsComposite.modelIDs[0])
-
-const delProfileComposite = await Composite.create({
+const genDelegateComposite = await createComposite(
   ceramic,
-  schema: delProfileSchema,
-})
+  "./composites/01-DelegateProfile.graphql"
+)
+
+const memberComposite = await createComposite(
+  ceramic,
+  "./composites/02-Member.graphql"
+)
 
 const daoProfileComposite = await createComposite(
-ceramic,
-"./composites-new/02-DAOProfile.graphql"
+  ceramic,
+  "./composites/03-DAOProfile.graphql"
 )
 
-const delOfProfileSchema = readFileSync("./composites-new/03-DelegateOfProfile.graphql", {
-encoding: "utf-8",
-}).replace("$GENERALDELEGATEPROFILE_ID", delProfileComposite.modelIDs[0])
-.replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
-
-const delOfComposite = await Composite.create({
+const delOfComposite = await createComposite(
   ceramic,
-  schema: delOfProfileSchema,
+  "./composites/04-DelegateOfProfile.graphql"
+)
+
+const memberOfProfileSchema = readFileSync("./composites/05-MemberProfile.graphql", {
+encoding: "utf-8",
+}).replace("$MODESETTING_ID", settingsComposite.modelIDs[0])
+.replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
+.replace("$GENERALDELEGATEPROFILE_ID", genDelegateComposite.modelIDs[0])
+.replace("$DELEGATEOFPROFILE_ID", delOfComposite.modelIDs[0])
+
+
+const memberOfComposite = await Composite.create({
+  ceramic,
+  schema: memberOfProfileSchema,
 })
 
-const delCircleSchema = readFileSync("./composites-new/04-DelegateCircleDist.graphql", {
+const delCircleSchema = readFileSync("./composites/06-DelegateCircleDist.graphql", {
   encoding: "utf-8",
 }).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
   
@@ -77,9 +86,11 @@ const delCircleComposite = await Composite.create({
 
 const composite = Composite.from([
   settingsComposite,
-  delProfileComposite,
+  genDelegateComposite,
+  memberComposite,
   daoProfileComposite,
   delOfComposite,
+  memberOfComposite,
   delCircleComposite
 ])
 

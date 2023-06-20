@@ -1,0 +1,10 @@
+# Delegate is the controller of this model
+type DelegateOfProfile @createModel(
+    accountRelation: LIST
+    description: "DAO-specific delegate profile"
+  ) {
+  author: DID! @documentAccount
+  version: CommitID! @documentVersion
+  intentStatement: String! @string(minLength: 25, maxLength: 100000)
+  daoRelevantQuals: String @string(minLength: 25, maxLength: 100000)
+}

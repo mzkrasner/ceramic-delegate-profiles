@@ -1,0 +1,11 @@
+# Individual DAO is the controller of this model
+type Member @createModel(
+    accountRelation: LIST
+    description: "A simple DAO member identifier model"
+  ) {
+  author: DID! @documentAccount
+  version: CommitID! @documentVersion
+  delegateID: DID! @accountReference
+  active: Boolean!
+  role: String @string(maxLength: 150)
+}
