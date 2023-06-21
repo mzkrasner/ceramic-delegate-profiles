@@ -6,11 +6,7 @@ type DAOProfile @createModel(
   author: DID! @documentAccount
   daoContractAddress: String! @string(minLength:42, maxLength:42)
   version: CommitID! @documentVersion
-  members: [Member] @list(maxLength: 100000000)
+  name: String! @string(minLength: 3, maxLength: 150)
+  description: String @string(maxLength:100000)
 }
 
-type Member {
-  delegateID: DID! @accountReference
-  active: Boolean!
-  role: String @string(maxLength: 150)
-}

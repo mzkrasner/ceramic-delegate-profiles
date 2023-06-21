@@ -45,22 +45,47 @@ const genDelegateComposite = await createComposite(
   "./composites/01-DelegateProfile.graphql"
 )
 
-const memberComposite = await createComposite(
-  ceramic,
-  "./composites/02-Member.graphql"
-)
-
 const daoProfileComposite = await createComposite(
   ceramic,
-  "./composites/03-DAOProfile.graphql"
+  "./composites/02-DAOProfile.graphql"
 )
 
-const delOfComposite = await createComposite(
+const memberSchema = readFileSync("./composites/03-Member.graphql", {
+  encoding: "utf-8",
+}).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
+
+const memberComposite = await Composite.create({
   ceramic,
-  "./composites/04-DelegateOfProfile.graphql"
+  schema: memberSchema,
+})
+
+const daoMemberSchema = readFileSync("./composites/04-DAOProfile.Member.graphql", {
+  encoding: "utf-8",
+})
+  .replace("$MEMBER_ID", memberComposite.modelIDs[1])
+  .replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
+
+const daoMemberComposite = await Composite.create({
+  ceramic,
+  schema: daoMemberSchema,
+})
+
+  const delOfComposite = await createComposite(
+  ceramic,
+  "./composites/05-DelegateOfProfile.graphql"
 )
 
-const memberOfProfileSchema = readFileSync("./composites/05-MemberProfile.graphql", {
+const delCircleSchema = readFileSync("./composites/06-DelegateCircleDist.graphql", {
+  encoding: "utf-8",
+}).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
+  
+
+const delCircleComposite = await Composite.create({
+  ceramic,
+  schema: delCircleSchema,
+})
+
+const memberOfProfileSchema = readFileSync("./composites/07-MemberProfile.graphql", {
 encoding: "utf-8",
 }).replace("$MODESETTING_ID", settingsComposite.modelIDs[0])
 .replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
@@ -73,25 +98,15 @@ const memberOfComposite = await Composite.create({
   schema: memberOfProfileSchema,
 })
 
-const delCircleSchema = readFileSync("./composites/06-DelegateCircleDist.graphql", {
-  encoding: "utf-8",
-}).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
-  
-
-const delCircleComposite = await Composite.create({
-  ceramic,
-  schema: delCircleSchema,
-})
-
-
 const composite = Composite.from([
   settingsComposite,
   genDelegateComposite,
-  memberComposite,
   daoProfileComposite,
+  memberComposite,
+  daoMemberComposite,
   delOfComposite,
-  memberOfComposite,
-  delCircleComposite
+  delCircleComposite,
+  memberOfComposite
 ])
 
 //Writing composites to local file

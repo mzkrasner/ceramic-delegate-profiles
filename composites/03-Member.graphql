@@ -1,3 +1,7 @@
+type DAOProfile @loadModel(id: "$DAOPROFILE_ID") {
+  id: ID!
+}
+
 # Individual DAO is the controller of this model
 type Member @createModel(
     accountRelation: LIST
@@ -7,5 +11,7 @@ type Member @createModel(
   version: CommitID! @documentVersion
   delegateID: DID! @accountReference
   active: Boolean!
+  DaoProfile: StreamID! @documentReference(model: "DAOProfile")
+  daoProfile: DAOProfile! @relationDocument(property: "DaoProfile")
   role: String @string(maxLength: 150)
 }
