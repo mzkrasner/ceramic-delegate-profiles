@@ -7,21 +7,3 @@ type GenDelegateProfile @createModel(accountRelation: SINGLE, description: "A ba
   generalValues: String @string(minLength:50, maxLength:10000)
   generalSkills: String @string(minLength:50, maxLength:10000)
 }
-
-# mutation CreateGeneralProfile($i: CreateGenDelegateProfileInput!){
-#   createGenDelegateProfile(input: $i){
-#         document{
-#         name
-#         generalDelegateStatement
-#     }
-#   }
-# }
-
-# {
-#   "i": {
-#     "content": {
-#       "name":  "Getting started with ComposeDB",
-#       "generalDelegateStatement": "asdoifsdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfjidsf"
-#     }
-#   }
-# }
