@@ -1,0 +1,12 @@
+type Member @loadModel(id: "$MEMBER_ID") {
+  id: ID!
+}
+
+type Contributor @loadModel(id: "$CONTRIBUTOR_ID") {
+  id: ID!
+}
+
+type DAOProfile @loadModel(id: "$DAOPROFILE_ID") {
+  members: [Member] @relationFrom(model: "Member", property: "DaoProfile")
+  contributors: [Contributor] @relationFrom(model: "Contributor", property: "DaoProfile")
+}

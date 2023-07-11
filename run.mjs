@@ -15,7 +15,7 @@ import { getResolver } from "key-did-resolver";
 import ora from "ora";
 
 const spinner = ora();
-const ceramic = new CeramicClient("http://localhost:7007");
+const ceramic = new CeramicClient("https://ceramic-temp.hirenodes.io/");
 
 //Accessing your admin key to authenticate the session
 const seed = shell.exec(
@@ -35,79 +35,139 @@ ceramic.did = did;
  * @return {Promise<void>} - return void when composite finishes deploying.
  */
 
+const linksComposite = await createComposite(
+  ceramic,
+  "./composites/00-Links.graphql"
+);
+
+const skillsComposite = await createComposite(
+  ceramic,
+  "./composites/00-Skills.graphql"
+);
+
 const settingsComposite = await createComposite(
   ceramic,
   "./composites/00-ModeSettings.graphql"
-)
+);
 
-const genDelegateComposite = await createComposite(
-  ceramic,
-  "./composites/01-DelegateProfile.graphql"
+const genProfileSchema = readFileSync(
+  "./composites/01-GenProfile.graphql",
+  {
+    encoding: "utf-8",
+  }
 )
+  .replace("$MODESETTING_ID", settingsComposite.modelIDs[0])
+  .replace("$LINKS_ID", linksComposite.modelIDs[0])
+  .replace("$SKILLS_ID", skillsComposite.modelIDs[0]);
+
+const genProfileComposite = await Composite.create({
+  ceramic,
+  schema: genProfileSchema,
+});
 
 const daoProfileComposite = await createComposite(
   ceramic,
   "./composites/02-DAOProfile.graphql"
-)
+);
 
 const memberSchema = readFileSync("./composites/03-Member.graphql", {
   encoding: "utf-8",
-}).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
+}).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0]);
 
 const memberComposite = await Composite.create({
   ceramic,
   schema: memberSchema,
-})
+});
 
-const daoMemberSchema = readFileSync("./composites/04-DAOProfile.Member.graphql", {
+const contributorSchema = readFileSync("./composites/04-Contributor.graphql", {
   encoding: "utf-8",
-})
-  .replace("$MEMBER_ID", memberComposite.modelIDs[1])
-  .replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
+}).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0]);
 
-const daoMemberComposite = await Composite.create({
+const contributorComposite = await Composite.create({
   ceramic,
-  schema: daoMemberSchema,
-})
+  schema: contributorSchema,
+});
 
-  const delOfComposite = await createComposite(
-  ceramic,
-  "./composites/05-DelegateOfProfile.graphql"
+const daoProfileConnectSchema = readFileSync(
+  "./composites/05-DAOProfile.Connect.graphql",
+  {
+    encoding: "utf-8",
+  }
 )
+  .replace("$MEMBER_ID", memberComposite.modelIDs[1])
+  .replace("$CONTRIBUTOR_ID", contributorComposite.modelIDs[1])
+  .replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0]);
 
-const delCircleSchema = readFileSync("./composites/06-DelegateCircleDist.graphql", {
-  encoding: "utf-8",
-}).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
-  
+const daoProfileConnectComposite = await Composite.create({
+  ceramic,
+  schema: daoProfileConnectSchema,
+});
+
+const delOfSchema = readFileSync(
+  "./composites/06-DelegateOfProfile.graphql",
+  {
+    encoding: "utf-8",
+  }
+).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0]);
+
+const delOfComposite = await Composite.create({
+  ceramic,
+  schema: delOfSchema,
+});
+
+const delCircleSchema = readFileSync(
+  "./composites/07-DelegateCircleDist.graphql",
+  {
+    encoding: "utf-8",
+  }
+).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0]);
 
 const delCircleComposite = await Composite.create({
   ceramic,
   schema: delCircleSchema,
-})
+});
 
-const memberOfProfileSchema = readFileSync("./composites/07-MemberProfile.graphql", {
-encoding: "utf-8",
-}).replace("$MODESETTING_ID", settingsComposite.modelIDs[0])
-.replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
-.replace("$GENERALDELEGATEPROFILE_ID", genDelegateComposite.modelIDs[0])
-.replace("$DELEGATEOFPROFILE_ID", delOfComposite.modelIDs[0])
+const contributorProfileSchema = readFileSync(
+  "./composites/08-ContributorProfile.graphql",
+  {
+    encoding: "utf-8",
+  }
+).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0]);
 
+const contributorProfileComposite = await Composite.create({
+  ceramic,
+  schema: contributorProfileSchema,
+});
+
+const memberOfProfileSchema = readFileSync(
+  "./composites/09-MemberProfile.graphql",
+  {
+    encoding: "utf-8",
+  }
+).replace("$DAOPROFILE_ID", daoProfileComposite.modelIDs[0])
+ .replace("$GENERALPROFILE_ID", genProfileComposite.modelIDs[3])
+ .replace("$DELEGATEOFPROFILE_ID", delOfComposite.modelIDs[1])
+ .replace("$CONTRIBUTORPROF_ID", contributorProfileComposite.modelIDs[1])
 
 const memberOfComposite = await Composite.create({
   ceramic,
   schema: memberOfProfileSchema,
-})
+});
 
 const composite = Composite.from([
+  linksComposite,
+  skillsComposite,
   settingsComposite,
-  genDelegateComposite,
+  genProfileComposite,
   daoProfileComposite,
   memberComposite,
-  daoMemberComposite,
+  contributorComposite,
+  daoProfileConnectComposite,
   delOfComposite,
   delCircleComposite,
+  contributorProfileComposite,
   memberOfComposite
-])
+]);
 
 //Writing composites to local file
 await writeEncodedComposite(composite, "./definition.json");
