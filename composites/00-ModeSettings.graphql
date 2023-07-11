@@ -12,18 +12,3 @@ enum Mode {
   DARK 
   SYSTEM
 }
-
-# mutation{
-#       createModeSetting(
-#         input: {
-#           content: {
-#             mode: DARK
-#           }
-#         }
-#       ) {
-#         document {
-#           mode
-#         }
-        
-#       }
-#     }
